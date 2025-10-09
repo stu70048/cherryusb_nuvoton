@@ -1,0 +1,7 @@
+[submodule "CherryUSB"]
+	path = CherryUSB
+	url = https://github.com/cherry-embedded/CherryUSB.git
+[submodule "usb_device/m55m1/BSP"]
+	path = usb_device/m55m1/BSP
+	url = https://github.com/stu70048/M55M1BSP.git
+	branch = lwlib
