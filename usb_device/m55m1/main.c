@@ -10,11 +10,12 @@
 #include <stdlib.h>
 #include "NuMicro.h"
 #define USE_USB_APLL1_CLOCK        1
-#define RTE_USBD0 1
+#define _USE_FS 1
+#define _USE_HS 0
 /* Private functions ---------------------------------------------------------*/
 __WEAK void SetUsbdCLK(void)
 {
-#if (RTE_USBD0)
+#if (_USE_FS)
 #if (USE_USB_APLL1_CLOCK)
     /* Select USB clock source as PLL/2 and USB clock divider as 2 */
     CLK_SetModuleClock(USBD0_MODULE, CLK_USBSEL_USBSEL_APLL1_DIV2, CLK_USBDIV_USBDIV(2));
@@ -31,7 +32,7 @@ __WEAK void SetUsbdCLK(void)
     /* Enable USBD module clock */
     CLK_EnableModuleClock(USBD0_MODULE);
 #endif
-#if (RTE_USBD1)
+#if (_USE_HS)
     /* Enable External RC clock */
     CLK_EnableXtalRC(CLK_SRCCTL_HXTEN_Msk);
     /* Waiting for External RC clock ready */
@@ -68,14 +69,14 @@ __WEAK void SetUsbdCLK(void)
 
 __WEAK void SetUsbdMFP(void)
 {
-#if (RTE_USBD0)
+#if (_USE_FS)
     /* USBD multi-function pins for VBUS, D+, D-, and ID pins */
     SET_USB_VBUS_PA12();
     SET_USB_D_MINUS_PA13();
     SET_USB_D_PLUS_PA14();
     SET_USB_OTG_ID_PA15();
 #endif
-#if (RTE_USBD1)
+#if (_USE_HS)
     /* fixed-function pins */
 #endif
 };
@@ -91,6 +92,15 @@ static void SYS_Init(void)
     /* Enable PLL0 220MHz clock from HIRC and switch SCLK clock source to APLL0 */
     CLK_SetBusClock(CLK_SCLKSEL_SCLKSEL_APLL0, CLK_APLLCTL_APLLSRC_HIRC, FREQ_220MHZ);
 
+#if (USE_USB_APLL1_CLOCK)
+    /* Enable APLL0 192MHz clock */
+    CLK_EnableAPLL(CLK_APLLCTL_APLLSRC_HIRC, FREQ_192MHZ, CLK_APLL1_SELECT);
+#else
+    /* Enable HIRC48M clock */
+    CLK_EnableXtalRC(CLK_SRCCTL_HIRC48MEN_Msk);
+    /* Waiting for HIRC48M clock ready */
+    CLK_WaitClockReady(CLK_STATUS_HIRC48MSTB_Msk);
+#endif
     /* Use SystemCoreClockUpdate() to calculate and update SystemCoreClock. */
     SystemCoreClockUpdate();
 
@@ -123,11 +133,11 @@ int main(void)
 #endif
 
     printf("System core clock = %d\n", SystemCoreClock);
-    printf("Hello World\n");
 
     extern void cdc_acm_msc_init(uint8_t busid, uint32_t reg_base);
 
-    cdc_acm_msc_init(0, (uint32_t)USBD);
+//    cdc_acm_msc_init(0, (uint32_t)USBD_BASE);
+    cdc_acm_msc_init(0, USBD_BASE);
     /* Got no where to go, just loop forever */
     while (1) {
     extern void cdc_acm_data_send_with_dtr_test(uint8_t busid);
