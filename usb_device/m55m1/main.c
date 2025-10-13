@@ -11,7 +11,7 @@
 #include "NuMicro.h"
 #define USE_USB_APLL1_CLOCK        1
 #define _USE_FS 1
-#define _USE_HS 0
+#define _USE_HS 1
 /* Private functions ---------------------------------------------------------*/
 __WEAK void SetUsbdCLK(void)
 {
@@ -106,14 +106,14 @@ static void SYS_Init(void)
 
     /* Enable UART module clock */
     SetDebugUartCLK();
-    
+
     /* Enable Usbd driver module clock */
     SetUsbdCLK();
     /*---------------------------------------------------------------------------------------------------------*/
     /* Init I/O Multi-function                                                                                 */
     /*---------------------------------------------------------------------------------------------------------*/
     SetDebugUartMFP();
-    
+
     /* Set USBD driver module MFP */
     SetUsbdMFP();
 
@@ -134,15 +134,15 @@ int main(void)
 
     printf("System core clock = %d\n", SystemCoreClock);
 
-    extern void cdc_acm_msc_init(uint8_t busid, uint32_t reg_base);
+    extern void msc_ram_init(uint8_t busid, uintptr_t reg_base);
+#if(_project==0)
+    msc_ram_init(0, (uint32_t)USBD);
+#elif(_project==1)
+    msc_ram_init(1, (uint32_t)HSUSBD);
+#endif
 
-//    cdc_acm_msc_init(0, (uint32_t)USBD_BASE);
-    cdc_acm_msc_init(0, USBD_BASE);
     /* Got no where to go, just loop forever */
-    while (1) {
-    extern void cdc_acm_data_send_with_dtr_test(uint8_t busid);
-      cdc_acm_data_send_with_dtr_test(0);
-    };
+    while (1) {};
 }
 
 /*** (C) COPYRIGHT 2023 Nuvoton Technology Corp. ***/
