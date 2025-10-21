@@ -226,6 +226,9 @@ int usbd_fs_ep_close(uint8_t busid, const uint8_t ep)
         periph_ep->CFG = 0U;
     }
 
+    // Reconfigures the buffer segmentation for all enabled endpoints(must configure EP before configure buffer segmentation)
+    USBD_EndpointConfigureBuffer(busid);
+
     return 0;
 }
 
@@ -253,6 +256,7 @@ int usbd_fs_ep_open(uint8_t busid, const struct usb_endpoint_descriptor *ep)
     // Error if USB buffer is insufficient
     if (g_nuvoton_udc->bufseg_addr + USB_GET_MAXPACKETSIZE(ep->wMaxPacketSize) > USBD_BUF_SIZE)
     {
+        USB_LOG_ERR("USB buffer is insufficient\n");
         return -2;
     }
 

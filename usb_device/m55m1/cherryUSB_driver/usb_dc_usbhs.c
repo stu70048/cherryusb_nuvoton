@@ -124,8 +124,6 @@ static USBD_EP_t *USBD_EndpointEntry(uint8_t busid, uint8_t ep_addr, bool add)
         }
     }
 
-    USB_LOG_ERR("Find periph_ep Fail\n");
-
     return NULL;
 }
 

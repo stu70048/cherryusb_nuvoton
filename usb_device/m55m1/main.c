@@ -134,15 +134,27 @@ int main(void)
 
     printf("System core clock = %d\n", SystemCoreClock);
 
-    extern void msc_ram_init(uint8_t busid, uintptr_t reg_base);
 #if(_project==0)
-    msc_ram_init(0, (uint32_t)USBD);
+    uintptr_t reg_base = (uint32_t)USBD;
 #elif(_project==1)
-    msc_ram_init(1, (uint32_t)HSUSBD);
+    uintptr_t reg_base = (uint32_t)HSUSBD;
 #endif
 
+    extern void msc_ram_init(uint8_t busid, uintptr_t reg_base);
+    extern void hid_mouse_init(uint8_t busid, uintptr_t reg_base);
+    extern void video_init(uint8_t busid, uintptr_t reg_base);
+//    hid_mouse_init(_project, reg_base);  
+//    msc_ram_init(_project, reg_base);
+    video_init(_project, reg_base);
+
     /* Got no where to go, just loop forever */
-    while (1) {};
+    while (1) 
+    {
+        extern void hid_mouse_test(uint8_t busid);
+//        hid_mouse_test(_project);
+        extern void video_test(uint8_t busid);
+        video_test(_project);
+    };
 }
 
 /*** (C) COPYRIGHT 2023 Nuvoton Technology Corp. ***/
