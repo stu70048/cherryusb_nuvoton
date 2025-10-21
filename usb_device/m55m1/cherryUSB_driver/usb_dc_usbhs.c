@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025, Kenny Tseng
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <stdint.h>
 #include "NuMicro.h"
 #include "usbd_core.h"
@@ -861,7 +867,6 @@ NVT_ITCM void HSUSBDn_IRQHandler(uint8_t busid)
 
 NVT_ITCM void HSUSBD_IRQHandler(void)
 {
-    //    printf("HSUSBD_IRQHandler\n");
     if (USBD_HW(1) == HSUSBD)
     {
         HSUSBDn_IRQHandler(1);

@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025, Kenny Tseng
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include <stdint.h>
 #include "NuMicro.h"
 #include "usbd_core.h"

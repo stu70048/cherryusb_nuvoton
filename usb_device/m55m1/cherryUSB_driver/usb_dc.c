@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2025, Kenny Tseng
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
 #include "usbd_core.h"
 
 extern int usb_fs_dc_init(uint8_t busid);
