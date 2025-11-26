@@ -453,7 +453,7 @@ int usbd_hs_ep_start_write(uint8_t busid, const uint8_t ep, const uint8_t *data,
 
 int usbd_hs_ep_start_read(uint8_t busid, const uint8_t ep, uint8_t *data, uint32_t data_len)
 {
-    if (!data && data_len)
+    if (!data)
     {
         return -1;
     }
@@ -493,7 +493,7 @@ int usbd_hs_ep_start_read(uint8_t busid, const uint8_t ep, uint8_t *data, uint32
             uint32_t u32TimeOutCnt = SystemCoreClock >> 2;
 
             while (ep_state->xfer_len < (husbd->CEPRXCNT & HSUSBD_CEPRXCNT_RXCNT_Msk))
-                if (--u32TimeOutCnt == 0) break;
+                if (--u32TimeOutCnt == 0) return -1;
 
             USBD_ReadEpBuffer(ep_state->xfer_buf, (uint32_t *)&husbd->CEPDAT, ep_state->xfer_len);
             ep_state->actual_xfer_len += ep_state->xfer_len;
@@ -527,7 +527,7 @@ static void USBD_BusReset(uint8_t busid)
     husbd->CEPBUFSTART = 0U;
     husbd->CEPBUFEND = USBD_EP0_MAX_PACKET_SIZE - 1U;
 
-    // USB RAM beyond what we've allocated above is available to the user(Control endpoint and setup package used.)
+    // USB RAM beyond what we've allocated above is available to the user(Control endpoint used.)
     g_nuvoton_udc->bufseg_addr = USBD_EP0_MAX_PACKET_SIZE;
 }
 
@@ -761,7 +761,7 @@ NVT_ITCM void HSUSBDn_IRQHandler(uint8_t busid)
                 if (ep_state->actual_xfer_len == ep_state->xfer_len)
                     usbd_event_ep_in_complete_handler(busid, 0x80U, ep_state->actual_xfer_len);
             }
-
+#if 0
             if (husbd->CEPINTSTS & HSUSBD_CEPINTSTS_OUTTKIF_Msk)
             {
                 ep_state = &g_nuvoton_udc->cep_state[0];
@@ -770,7 +770,7 @@ NVT_ITCM void HSUSBDn_IRQHandler(uint8_t busid)
                 if (ep_state->actual_xfer_len == ep_state->xfer_len)
                     usbd_event_ep_out_complete_handler(busid, 0x00U, ep_state->actual_xfer_len);
             }
-
+#endif
             husbd->CEPINTSTS = HSUSBD_CEPINTSTS_STSDONEIF_Msk;
             husbd->CEPINTEN = HSUSBD_CEPINTEN_SETUPPKIEN_Msk;
             return;
